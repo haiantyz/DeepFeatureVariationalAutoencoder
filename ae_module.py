@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from torchvision import transforms
-from torch.nn import functional as F
 
 
 def conv4x4_bn_relu(channels_in, channels_out, bn_momentum):
@@ -20,6 +18,9 @@ def up_conv3x3_bn_relu(channels_in, channels_out, bn_momentum):
         nn.BatchNorm2d(num_features=channels_out, momentum=bn_momentum),
         nn.LeakyReLU(negative_slope=0.01)
     )
+
+
+###
 
 
 class auto_encoder(nn.Module):
@@ -76,5 +77,3 @@ class auto_encoder(nn.Module):
             return out[out_keys[0]]
         else:
             return [out[key] for key in out_keys]
-
-
