@@ -2,12 +2,16 @@ from torchvision import models
 import torch.nn as nn
 import torch.nn.functional as functional
 
+import Norm_Layer
+
 
 ###
 
 class VGG(nn.Module):
     def __init__(self):
         super(VGG, self).__init__()
+
+        self.norm_layer = Norm_Layer.ImageNet_Norm_Layer_2()
 
         vgg = models.vgg19(pretrained=True)
         vgg_feats = vgg.features
@@ -56,6 +60,7 @@ class VGG(nn.Module):
         self.pool5 = layers.pop(0)
 
     def forward(self, x, out_keys):
+        x = self.norm_layer(x)
         out = {}
         out['r11'] = functional.relu(self.conv1_1(x))
         out['r12'] = functional.relu(self.conv1_2(out['r11']))
