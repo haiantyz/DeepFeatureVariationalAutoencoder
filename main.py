@@ -53,7 +53,7 @@ adam = torch.optim.Adam(auto_encoder.parameters(), lr=learning_rate)
 ###
 
 for e in range(epochs):
-    print('Epoch {} of {}'.format(e + 1, epochs))
+    print('\n\nEpoch {} of {}'.format(e + 1, epochs))
 
     auto_encoder.train()
     loss_counter = 0.
