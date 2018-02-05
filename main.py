@@ -33,7 +33,7 @@ train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuff
 ###
 
 auto_encoder = ae_module.auto_encoder()
-vgg = my_vgg.vgg()
+vgg = my_vgg.VGG()
 if cuda:
     auto_encoder.cuda()
     vgg.cuda()

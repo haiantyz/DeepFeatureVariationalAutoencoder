@@ -5,9 +5,9 @@ import torch.nn.functional as functional
 
 ###
 
-class vgg(nn.Module):
+class VGG(nn.Module):
     def __init__(self):
-        super(vgg, self).__init__()
+        super(VGG, self).__init__()
 
         vgg = models.vgg19(pretrained=True)
         vgg_feats = vgg.features
