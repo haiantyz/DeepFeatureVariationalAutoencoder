@@ -17,7 +17,7 @@ content_layers = ['r11', 'r21', 'r31']
 cuda = torch.cuda.is_available()
 dtype = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
-print_every = 10
+print_every = 500
 
 ###
 
@@ -69,6 +69,5 @@ for e in range(epochs):
         loss.backward()
         adam.step()
     print('Average loss over epoch = {}'.format(loss_counter / (i + 1)))
-
     os.makedirs('./models', exist_ok=True)
     torch.save(auto_encoder.state_dict(), './ae_params_epoch{}.pt'.format(e))
