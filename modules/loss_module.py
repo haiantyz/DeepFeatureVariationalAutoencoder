@@ -2,13 +2,13 @@ import torch.nn as nn
 import torch
 
 
-def sum_list(x):
-    for i in range(len(x)):
-        if i == 0:
-            out = x[i]
-        else:
-            out += x[i]
-    return out
+# def sum_list(x):
+#     for i in range(len(x)):
+#         if i == 0:
+#             out = x[i]
+#         else:
+#             out += x[i]
+#     return out
 
 
 ###
@@ -31,6 +31,6 @@ class Content_Loss(nn.Module):
         # KLD = torch.mean(KLD, dim=0)
 
         loss_list = [self.criterion(output[layer], target[layer]) for layer in range(len(output))]
-        CONTENT = sum_list(loss_list)
+        content = sum(loss_list)
 
-        return self.alpha * KLD + self.beta * CONTENT
+        return self.alpha * KLD + self.beta * content
