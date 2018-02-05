@@ -53,12 +53,12 @@ adam = torch.optim.Adam(auto_encoder.parameters(), lr=learning_rate)
 ###
 
 for e in range(epochs):
-    print('\n\nEpoch {} of {}'.format(e + 1, epochs))
+    print('\n\nEpoch {} of {}'.format(e, epochs))
 
     auto_encoder.train()
     loss_counter = 0.
     for i, (images, _) in enumerate(train_loader):
-        if i % print_every == 0: print('Batch {} of {}'.format(i + 1, len(train_loader)))
+        if i % print_every == 0: print('Batch {} of {}'.format(i, len(train_loader)))
         images = Variable(images.type(dtype))
         adam.zero_grad()
         target = vgg(images, out_keys=content_layers)
@@ -71,4 +71,4 @@ for e in range(epochs):
     print('Average loss over epoch = {}'.format(loss_counter / (i + 1)))
 
     os.makedirs('./models', exist_ok=True)
-    torch.save(auto_encoder.state_dict(), './ae_params_epoch{}.pt'.format(e + 1))
+    torch.save(auto_encoder.state_dict(), './ae_params_epoch{}.pt'.format(e))
