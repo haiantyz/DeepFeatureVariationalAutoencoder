@@ -9,7 +9,7 @@ from modules import my_vgg, ae_module, loss_module
 learning_rate = 0.001
 batch_size = 64
 
-epochs = 1
+epochs = 5
 
 content_layers = ['r11', 'r21', 'r31']
 
@@ -41,6 +41,7 @@ for param in vgg.parameters():
 if cuda:
     auto_encoder.cuda()
     vgg.cuda()
+    content_loss.cuda()
 
 ###
 
@@ -55,8 +56,9 @@ for e in epochs:
         images = Variable(images.type(dtype))
         adam.zero_grad()
         target = vgg(images, out_keys=content_layers)
-        output = vgg(auto_encoder(images), out_keys=content_layers)
-        loss = content_loss(output, target)
+        reconstruced, mean, logvar = auto_encoder(images, out_keys=['reconstructed', 'mean', 'logvar'])
+        output = vgg(reconstruced, out_keys=content_layers)
+        loss = content_loss(output, target, mean, logvar)
         loss.backward()
         adam.step()
 
