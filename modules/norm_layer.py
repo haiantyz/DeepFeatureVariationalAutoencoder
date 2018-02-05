@@ -1,8 +1,9 @@
 import torch
+import torch.nn as nn
 from torch.autograd import Variable
 
 
-class ImageNet_Norm_Layer(torch.nn.Module):
+class ImageNet_Norm_Layer(nn.Module):
 
     def __init__(self, image_size, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
         super(ImageNet_Norm_Layer, self).__init__()

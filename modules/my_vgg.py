@@ -2,7 +2,7 @@ from torchvision import models
 import torch.nn as nn
 import torch.nn.functional as functional
 
-import Norm_Layer
+from modules import norm_layer
 
 
 ###
@@ -11,7 +11,7 @@ class VGG(nn.Module):
     def __init__(self):
         super(VGG, self).__init__()
 
-        self.norm_layer = Norm_Layer.ImageNet_Norm_Layer_2()
+        self.norm_layer = norm_layer.ImageNet_Norm_Layer_2()
 
         vgg = models.vgg19(pretrained=True)
         vgg_feats = vgg.features

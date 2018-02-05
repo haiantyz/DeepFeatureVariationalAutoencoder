@@ -2,13 +2,14 @@ import torch
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 
-import ae_module
-import my_vgg
+from modules import my_vgg, ae_module, loss_module
 
 ###
 
 learning_rate = 0.001
 batch_size = 64
+
+epochs = 1
 
 content_layers = ['r11', 'r21', 'r31']
 
@@ -22,9 +23,7 @@ data_dir = '/media/peter/HDD 1/datasets_peter/CelebA/Img'
 prep_transform = transforms.Compose([
     transforms.Resize(64),
     transforms.CenterCrop(64),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                         std=[0.229, 0.224, 0.225])
+    transforms.ToTensor()
 ])
 
 dataset = datasets.ImageFolder(root=data_dir, transform=prep_transform)
@@ -32,16 +31,33 @@ train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuff
 
 ###
 
-auto_encoder = ae_module.auto_encoder()
+auto_encoder = ae_module.Auto_Encoder()
 vgg = my_vgg.VGG()
+content_loss = loss_module.Content_Loss()
+
+for param in vgg.parameters():
+    param.requires_grad = False
+
 if cuda:
     auto_encoder.cuda()
     vgg.cuda()
 
-for i, (x, _) in enumerate(train_loader):
-    x = Variable(x.type(dtype))
-    y = auto_encoder(x)
-    target = vgg(x, content_layers)
-    output = vgg(x, content_layers)
+###
 
-    c = 2
+adam = torch.optim.Adam(auto_encoder.parameters(), lr=learning_rate)
+
+###
+
+for e in epochs:
+
+    auto_encoder.train()
+    for i, (images, _) in enumerate(train_loader):
+        images = Variable(images.type(dtype))
+        adam.zero_grad()
+        target = vgg(images, out_keys=content_layers)
+        output = vgg(auto_encoder(images), out_keys=content_layers)
+        loss = content_loss(output, target)
+        loss.backward()
+        adam.step()
+
+        c = 2

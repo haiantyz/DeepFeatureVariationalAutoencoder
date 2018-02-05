@@ -23,10 +23,10 @@ def up_conv3x3_bn_relu(channels_in, channels_out, bn_momentum):
 ###
 
 
-class auto_encoder(nn.Module):
+class Auto_Encoder(nn.Module):
 
     def __init__(self, input_channels=3, bn_momentum=0.9):
-        super(auto_encoder, self).__init__()
+        super(Auto_Encoder, self).__init__()
 
         self.bn0 = nn.BatchNorm2d(num_features=input_channels, momentum=bn_momentum)
         self.encode_layer1 = conv4x4_bn_relu(input_channels, 32, bn_momentum)
