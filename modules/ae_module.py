@@ -22,12 +22,10 @@ def up_conv3x3_bn_relu(channels_in, channels_out, bn_momentum):
 
 ###
 
-
-class Auto_Encoder(nn.Module):
+class Encoder(nn.Module):
 
     def __init__(self, input_channels=3, bn_momentum=0.9):
-        super(Auto_Encoder, self).__init__()
-
+        super(Encoder, self).__init__()
         self.bn0 = nn.BatchNorm2d(num_features=input_channels, momentum=bn_momentum)
         self.encode_layer1 = conv4x4_bn_relu(input_channels, 32, bn_momentum)
         self.encode_layer2 = conv4x4_bn_relu(32, 64, bn_momentum)
@@ -36,6 +34,20 @@ class Auto_Encoder(nn.Module):
         self.mean_layer = nn.Linear(in_features=256 * 4 * 4, out_features=100)
         self.logvar_layer = nn.Linear(in_features=256 * 4 * 4, out_features=100)
 
+    def forward(self, x):
+        x = self.bn0(x)
+        x = self.encode_layer1(x)
+        x = self.encode_layer2(x)
+        x = self.encode_layer3(x)
+        x = self.encode_layer4(x)
+        x = x.view(x.size(0), -1)
+        return self.mean_layer(x), self.logvar_layer(x)
+
+
+class Decoder(nn.Module):
+
+    def __init__(self, bn_momentum=0.9):
+        super(Decoder, self).__init__()
         self.fc = nn.Sequential(
             nn.Linear(in_features=100, out_features=256 * 4 * 4),
             nn.LeakyReLU(negative_slope=0.01)
@@ -49,31 +61,28 @@ class Auto_Encoder(nn.Module):
             nn.Sigmoid()
         )
 
-    def forward(self, x, out_keys=['reconstructed']):
-        out = {}
+    def forward(self, z):
+        z = self.fc(z)
+        z = z.view(z.size(0), 256, 4, 4)
+        z = self.decode_layer1(z)
+        z = self.decode_layer2(z)
+        z = self.decode_layer3(z)
+        return self.final(z)
 
-        x = self.bn0(x)
-        x = self.encode_layer1(x)
-        x = self.encode_layer2(x)
-        x = self.encode_layer3(x)
-        x = self.encode_layer4(x)
-        x = x.view(x.size(0), -1)
 
-        out['mean'] = self.mean_layer(x)
-        out['logvar'] = self.logvar_layer(x)
+###
 
-        std = 0.5 * torch.exp(out['logvar'])
+
+class Auto_Encoder(nn.Module):
+
+    def __init__(self, input_channels=3, bn_momentum=0.9):
+        super(Auto_Encoder, self).__init__()
+        self.encoder = Encoder(input_channels=input_channels, bn_momentum=bn_momentum)
+        self.decoder = Decoder(bn_momentum=bn_momentum)
+
+    def forward(self, x):
+        mean, logvar = self.encoder(x)
+        std = 0.5 * torch.exp(logvar)
         eps = Variable(torch.normal(torch.zeros_like(std.data), torch.ones_like(std.data)))
-        out['z'] = out['mean'] + eps * std
-
-        u = self.fc(out['z'])
-        u = u.view(u.size(0), 256, 4, 4)
-        u = self.decode_layer1(u)
-        u = self.decode_layer2(u)
-        u = self.decode_layer3(u)
-        out['reconstructed'] = self.final(u)
-
-        if len(out_keys) == 1:
-            return out[out_keys[0]]
-        else:
-            return [out[key] for key in out_keys]
+        z = mean + eps * std
+        return self.decoder(z)

@@ -4,6 +4,7 @@ import torch.nn.functional as functional
 import torch
 from torch.autograd import Variable
 
+
 ###
 
 class ImageNet_Norm_Layer_2(nn.Module):
@@ -74,8 +75,9 @@ class VGG(nn.Module):
         self.pool5 = layers.pop(0)
 
     def forward(self, x, out_keys):
-        x = self.norm_layer(x)
         out = {}
+        out['in'] = x
+        x = self.norm_layer(x)
         out['r11'] = functional.relu(self.conv1_1(x))
         out['r12'] = functional.relu(self.conv1_2(out['r11']))
         out['p1'] = self.pool1(out['r12'])
