@@ -2,7 +2,7 @@ import torch
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 
-from modules import my_vgg, ae_module, loss_module
+from modules import ae_module, loss_module
 import os
 
 ###
@@ -11,8 +11,6 @@ learning_rate = 0.001
 batch_size = 64
 
 epochs = 5
-
-content_layers = ['in']
 
 cuda = torch.cuda.is_available()
 dtype = torch.cuda.FloatTensor if cuda else torch.FloatTensor
@@ -35,15 +33,10 @@ train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuff
 ###
 
 auto_encoder = ae_module.Auto_Encoder(input_channels=3, bn_momentum=0.9)
-vgg = my_vgg.VGG()
-content_loss = loss_module.Content_Loss()
-
-for param in vgg.parameters():
-    param.requires_grad = False
+content_loss = loss_module.Plain_Loss()
 
 if cuda:
     auto_encoder.cuda()
-    vgg.cuda()
     content_loss.cuda()
 
 ###
@@ -61,10 +54,8 @@ for e in range(epochs):
         if i % print_every == 0: print('Batch {} of {}'.format(i, len(train_loader)))
         images = Variable(images.type(dtype))
         adam.zero_grad()
-        target = vgg(images, out_keys=content_layers)
         reconstruced, mean, logvar = auto_encoder(images)
-        output = vgg(reconstruced, out_keys=content_layers)
-        loss = content_loss(output, target, mean, logvar)
+        loss = content_loss(reconstruced, images, mean, logvar)
         loss_counter += loss.data
         loss.backward()
         adam.step()

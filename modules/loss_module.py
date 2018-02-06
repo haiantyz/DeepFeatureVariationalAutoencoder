@@ -11,7 +11,21 @@ class Content_Loss(nn.Module):
         self.criterion = nn.MSELoss()
 
     def forward(self, output, target, mean, logvar):
-        kld = -0.5 * torch.mean(1 + logvar - mean.pow(2) - logvar.exp()) # or should we use torch.sum() ?
+        kld = -0.5 * torch.mean(1 + logvar - mean.pow(2) - logvar.exp())  # or should we use torch.sum() ?
         loss_list = [self.criterion(output[layer], target[layer]) for layer in range(len(output))]
         content = sum(loss_list)
         return self.alpha * kld + self.beta * content
+
+
+###
+
+class Plain_Loss(nn.Module):
+
+    def __init__(self):
+        super(Plain_Loss, self).__init__()
+        self.criterion = nn.MSELoss()
+
+    def forward(self, output, target, mean, logvar):
+        kld = -0.5 * torch.mean(1 + logvar - mean.pow(2) - logvar.exp())
+        content = self.criterion(output, target)
+        return kld + content
