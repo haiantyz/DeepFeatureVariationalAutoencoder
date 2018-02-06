@@ -24,7 +24,7 @@ prep_transform = transforms.Compose([
 ])
 
 dataset = datasets.ImageFolder(root=data_dir, transform=prep_transform)
-train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
+train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False)
 
 ###
 
