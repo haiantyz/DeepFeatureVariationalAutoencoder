@@ -38,7 +38,7 @@ if cuda:
 auto_encoder.eval()
 for i, (images, _) in enumerate(train_loader):
     images = Variable(images.type(dtype))
-    reconstruced = auto_encoder(images, out_keys=['reconstructed'])
+    reconstruced, _, _ = auto_encoder(images)
     break
 
 ###

@@ -62,7 +62,7 @@ for e in range(epochs):
         images = Variable(images.type(dtype))
         adam.zero_grad()
         target = vgg(images, out_keys=content_layers)
-        reconstruced, mean, logvar = auto_encoder(images, out_keys=['reconstructed', 'mean', 'logvar'])
+        reconstruced, mean, logvar = auto_encoder(images)
         output = vgg(reconstruced, out_keys=content_layers)
         loss = content_loss(output, target, mean, logvar)
         loss_counter += loss.data

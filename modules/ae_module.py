@@ -85,4 +85,4 @@ class Auto_Encoder(nn.Module):
         std = 0.5 * torch.exp(logvar)
         eps = Variable(torch.normal(torch.zeros_like(std.data), torch.ones_like(std.data)))
         z = mean + eps * std
-        return self.decoder(z)
+        return self.decoder(z), mean, logvar
