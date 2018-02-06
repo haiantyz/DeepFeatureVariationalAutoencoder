@@ -29,7 +29,7 @@ train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuff
 ###
 
 auto_encoder = ae_module.Auto_Encoder(input_channels=3, bn_momentum=0.9)
-auto_encoder.load_state_dict(torch.load('../models/ae_params_epoch4_plain.pt'))
+auto_encoder.load_state_dict(torch.load('./models/ae_params_epoch4_plain.pt'))
 if cuda:
     auto_encoder.cuda()
 
@@ -43,6 +43,6 @@ for i, (images, _) in enumerate(train_loader):
 
 ###
 
-os.makedirs('../results', exist_ok=1)
-save_image(images.data, '../results/input.png')
-save_image(reconstruced.data, '../results/reconstructed_plain.png')
+os.makedirs('./results', exist_ok=1)
+save_image(images.data, './results/input.png')
+save_image(reconstruced.data, './results/reconstructed_plain.png')
