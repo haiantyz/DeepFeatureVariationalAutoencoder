@@ -70,4 +70,4 @@ for e in range(epochs):
         adam.step()
     print('Average loss over epoch = {}'.format(loss_counter / (i + 1)))
     os.makedirs('./models', exist_ok=True)
-    torch.save(auto_encoder.state_dict(), './ae_params_epoch{}.pt'.format(e))
+    torch.save(auto_encoder.state_dict(), './models/ae_params_epoch{}.pt'.format(e))

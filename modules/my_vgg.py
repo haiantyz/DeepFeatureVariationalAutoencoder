@@ -1,8 +1,22 @@
 from torchvision import models
 import torch.nn as nn
 import torch.nn.functional as functional
+import torch
+from torch.autograd import Variable
 
-from modules import norm_layer
+###
+
+class ImageNet_Norm_Layer_2(nn.Module):
+
+    def __init__(self, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
+        super(ImageNet_Norm_Layer_2, self).__init__()
+        self.cuda = torch.cuda.is_available()
+        dtype = torch.cuda.FloatTensor if self.cuda else torch.FloatTensor
+        self.mean = Variable(torch.FloatTensor(mean).type(dtype), requires_grad=0)
+        self.std = Variable(torch.FloatTensor(std).type(dtype), requires_grad=0)
+
+    def forward(self, input):
+        return ((input.permute(0, 2, 3, 1) - self.mean) / self.std).permute(0, 3, 1, 2)
 
 
 ###
@@ -11,7 +25,7 @@ class VGG(nn.Module):
     def __init__(self):
         super(VGG, self).__init__()
 
-        self.norm_layer = norm_layer.ImageNet_Norm_Layer_2()
+        self.norm_layer = ImageNet_Norm_Layer_2()
 
         vgg = models.vgg19(pretrained=True)
         vgg_feats = vgg.features
