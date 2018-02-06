@@ -33,7 +33,7 @@ train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuff
 ###
 
 auto_encoder = ae_module.Auto_Encoder(input_channels=3, bn_momentum=0.9)
-content_loss = loss_module.Plain_Loss()
+content_loss = loss_module.Plain_Loss(kld_weight=0.01)
 
 if cuda:
     auto_encoder.cuda()
